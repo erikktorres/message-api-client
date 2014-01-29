@@ -43,4 +43,17 @@ describe('messages client', function() {
 
     });
 
+    it('returns two groups', function(done) {
+
+        client.getUsersMessages('1234','fakeit',function(err,userMessages){
+            if(err) done(err);
+
+            expect(userMessages.groups).to.exist;
+            console.log(userMessages.groups);
+
+            done();
+        });
+
+    });
+
 });

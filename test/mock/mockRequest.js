@@ -63,18 +63,18 @@ module.exports = function(options, cb) {
 	};
 
 	if(options.url.indexOf('/all/1234/')){
-		console.log('return messages for 1234');
+		//console.log('return messages for 1234');
 		return cb(null,res,JSON.stringify(message1234));
 	} 
     if (options.url.indexOf('/all/5678/')){
 
-		console.log('return messages for 5678');
+		//console.log('return messages for 5678');
 		return cb(null,res,JSON.stringify(message5678));
 		
 	}
     if(options.url.indexOf('/membership/')){
 
-		console.log('return groups')
+		//console.log('return groups')
 		return cb(null,res,JSON.stringify(groups));
 
 	}
