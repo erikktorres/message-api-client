@@ -49,9 +49,58 @@ describe('messages client', function() {
             if(err) done(err);
 
             expect(userMessages.groups).to.exist;
-            console.log(userMessages.groups);
+            expect(userMessages.groups.length).to.equal(2);
 
             done();
+        });
+
+    });
+
+    it('returns three messages for the first group', function(done) {
+
+        client.getUsersMessages('1234','fakeit',function(err,userMessages){
+            if(err) done(err);
+
+            var oneGroup = userMessages.groups[0];
+            expect(oneGroup.messages.length).to.equal(3);
+            done();
+        });
+
+    });
+
+    it('returns one message for the second group', function(done) {
+
+        client.getUsersMessages('1234','fakeit',function(err,userMessages){
+            if(err) done(err);
+
+            var oneGroup = userMessages.groups[1];
+            expect(oneGroup.messages.length).to.equal(1);
+            done();
+        });
+
+    });
+
+});
+
+describe('messages client cannot talk to hosts', function() {
+
+    var client;
+
+    before(function(){
+
+        var emptyGetter = require('./mock/mockEmptyHakkenWatcher')();
+
+        client = require('../lib/client')(emptyGetter, emptyGetter, mockedRequest);
+    });
+
+    it('returns an error code and message as the host cannot be found', function(done) {
+
+        client.getUsersMessages('1234','fakeit',function(err,userMessages){
+
+            expect(err.statusCode).to.equal(503);
+            expect(err.message).to.exist;
+            done();           
+            
         });
 
     });

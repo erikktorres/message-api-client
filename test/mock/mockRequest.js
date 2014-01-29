@@ -20,7 +20,7 @@ var groups = [
 
 var message1234 = [
 {
-	id:'7234',
+    id:'7234',
     parentmessage : '',
     userid: 'a3d6a658-6e6a-401b-bcb3-c99268ba1804',
     groupid: '1234',
@@ -28,7 +28,7 @@ var message1234 = [
     messagetext: 'In three words I can sum up everything I have learned about life: it goes on.'
 },
 {
-	id:'7345',
+    id:'7345',
     parentmessage:'7234',
     userid: 'a3d6a658-6e6a-401b-bcb3-c99268ba1804',
     groupid: '1234',
@@ -36,7 +36,7 @@ var message1234 = [
     messagetext: 'Second message.'
 },
 {
-	id:'7890',
+    id:'7890',
     parentmessage:'7234',
     userid: 'f87aeade-e663-4e23-9f86-f2cbd7400d27',
     groupid: '1234',
@@ -46,7 +46,7 @@ var message1234 = [
 
 var message5678 = [
 {
-	id:'',
+    id:'',
     parentmessage : '',
     userid: 'a3d6a658-6e6a-401b-bcb3-c99268ba1804',
     groupid: '5678',
@@ -56,26 +56,23 @@ var message5678 = [
 
 module.exports = function(options, cb) {
 
-	console.log('request opts',options);
+    //console.log('request opts',options);
 
-	var res = {
-		statusCode : 200
-	};
+    var res = {
+        statusCode : 200
+    };
 
-	if(options.url.indexOf('/all/1234/')){
-		//console.log('return messages for 1234');
-		return cb(null,res,JSON.stringify(message1234));
-	} 
-    if (options.url.indexOf('/all/5678/')){
+    if(options.url.indexOf('all') !== -1){
+        if(options.url.indexOf('1234') !== -1){
+            //console.log('return messages for 1234');
+            return cb(null,res,JSON.stringify(message1234));
+        }else if(options.url.indexOf('5678') !== -1){
+            //console.log('return messages for 5678');
+            return cb(null,res,JSON.stringify(message5678)); 
+        }
+    }else if(options.url.indexOf('membership') !== -1){
+        //console.log('return groups');
+        return cb(null,res,JSON.stringify(groups));
 
-		//console.log('return messages for 5678');
-		return cb(null,res,JSON.stringify(message5678));
-		
-	}
-    if(options.url.indexOf('/membership/')){
-
-		//console.log('return groups')
-		return cb(null,res,JSON.stringify(groups));
-
-	}
+    }
 };
