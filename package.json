@@ -2,7 +2,11 @@
   "name": "message-api-client",
   "version": "0.0.1",
   "description": "Client library to make it easier to use the message-api",
-  "main": "lib/middleware.js",
+  "main": "index.js",
+  "homepage": "https://github.com/tidepool-org/message-api-client",
+  "bugs": "https://github.com/tidepool-org/message-api-client/issues",
+  "repository": "https://github.com/tidepool-org/message-api-client.git",
+  "license": "BSD-2-Clause",
   "scripts": {
     "test": "grunt test"
   },
