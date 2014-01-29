@@ -23,20 +23,24 @@ describe('messages client', function() {
 
     before(function(){
         var groupsHostGetter = require('./mock/mockHakkenWatcher')('localhost','8080');
-        var messeagesHostGetter = require('./mock/mockHakkenWatcher')('localhost','8082');
-        client = require('../lib/client')(groupsHostGetter, messeagesHostGetter, mockedRequest);
+        var messagesHostGetter = require('./mock/mockHakkenWatcher')('localhost','8082');
+        client = require('../lib/client')(groupsHostGetter, messagesHostGetter, mockedRequest);
     });
 
-    it('valid token returns us the user id', function(done) {
+    it('returns groups and associated messages for user', function(done) {
 
         client.getUsersMessages('1234','fakeit',function(err,userMessages){
             if(err) done(err);
 
             expect(userMessages).to.exist;
+            expect(userMessages.groups).to.exist;
+
+            var oneGroup = userMessages.groups[0];
+            expect(oneGroup.messages).to.exist;
+
             done();
         });
 
     });
-
 
 });
