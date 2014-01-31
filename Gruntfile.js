@@ -77,6 +77,6 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['test']);
   // Standard tasks
-  grunt.registerTask('test', ['mochaTest:unit']);
+  grunt.registerTask('test', ['jshint','mochaTest:unit']);
 
 };

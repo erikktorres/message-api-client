@@ -80,8 +80,8 @@ module.exports = function(options, cb) {
     }else if(options.url.indexOf('thread') !== -1){
       return cb(null,res,JSON.stringify(message1234));
     }else if(options.url.indexOf('reply') !== -1){
-      return cb(null,res,JSON.stringify('99999'));      
+      return cb(null,res,JSON.stringify('99999'));
     }else if(options.url.indexOf('send') !== -1){
-      return cb(null,res,JSON.stringify('88888975'));      
+      return cb(null,res,JSON.stringify('88888975'));
     }
   };
