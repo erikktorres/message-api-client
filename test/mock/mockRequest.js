@@ -77,5 +77,11 @@ module.exports = function(options, cb) {
     }else if(options.url.indexOf('membership') !== -1){
       //console.log('return groups');
       return cb(null,res,JSON.stringify(groups));
+    }else if(options.url.indexOf('thread') !== -1){
+      return cb(null,res,JSON.stringify(message1234));
+    }else if(options.url.indexOf('reply') !== -1){
+      return cb(null,res,JSON.stringify('99999'));      
+    }else if(options.url.indexOf('send') !== -1){
+      return cb(null,res,JSON.stringify('88888975'));      
     }
   };

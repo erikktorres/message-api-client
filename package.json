@@ -6,12 +6,11 @@
   "homepage": "https://github.com/tidepool-org/message-api-client",
   "bugs": "https://github.com/tidepool-org/message-api-client/issues",
   "repository": "https://github.com/tidepool-org/message-api-client.git",
-  "license": "BSD-2-Clause",
+  "license": "Tidepool",
   "scripts": {
     "test": "grunt test"
   },
   "author": "Tidepool",
-  "license": "Tidepool",
   "devDependencies": {
     "expect": "0.0.2",
     "mocha": "1.17.1",
