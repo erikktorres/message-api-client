@@ -67,15 +67,8 @@ module.exports = function(options, cb) {
     };
 
     if(options.url.indexOf('all') !== -1){
-      if(options.url.indexOf('1234') !== -1){
-        //console.log('return messages for 1234');
-        return cb(null,res,JSON.stringify(message1234));
-      }else if(options.url.indexOf('5678') !== -1){
-            //console.log('return messages for 5678');
-        return cb(null,res,JSON.stringify(message5678));
-      }
+      return cb(null,res,JSON.stringify(message1234));
     }else if(options.url.indexOf('membership') !== -1){
-      //console.log('return groups');
       return cb(null,res,JSON.stringify(groups));
     }else if(options.url.indexOf('thread') !== -1){
       return cb(null,res,JSON.stringify(message1234));
