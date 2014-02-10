@@ -16,4 +16,3 @@
 'use strict';
 
 exports.client = require('./lib/client.js');
-exports.middleware = require('./lib/middleware.js');

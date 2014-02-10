@@ -15,11 +15,6 @@
 
 'use strict';
 
-var groups = [
-  {id:'1234', members:['a3d6a658-6e6a-401b-bcb3-c99268ba1804','f87aeade-e663-4e23-9f86-f2cbd7400d27']},
-  {id:'5678', members:['a3d6a658-6e6a-401b-bcb3-c99268ba1804']}
-];
-
 var message1234 = [
   {
     id:'7234',
@@ -47,20 +42,7 @@ var message1234 = [
   }
 ];
 
-var message5678 = [
-  {
-    id:'',
-    parentmessage : '',
-    userid: 'a3d6a658-6e6a-401b-bcb3-c99268ba1804',
-    groupid: '5678',
-    timestamp: '2013-11-28T23:07:40+00:00',
-    messagetext: 'In three words I can sum up everything I have learned about life: it goes on.'
-  }
-];
-
 module.exports = function(options, cb) {
-
-    //console.log('request opts',options);
 
     var res = {
       statusCode : 200
@@ -68,8 +50,6 @@ module.exports = function(options, cb) {
 
     if(options.url.indexOf('all') !== -1){
       return cb(null,res,JSON.stringify(message1234));
-    }else if(options.url.indexOf('membership') !== -1){
-      return cb(null,res,JSON.stringify(groups));
     }else if(options.url.indexOf('thread') !== -1){
       return cb(null,res,JSON.stringify(message1234));
     }else if(options.url.indexOf('reply') !== -1){

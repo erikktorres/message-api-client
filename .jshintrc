@@ -4,7 +4,17 @@
   // Documentation: http://www.jshint.com/docs/
   "browser": true,
   "esnext": true,
-  "globals": { "process": false, "require": false, "define": false, "console": false, "it": false, "describe": false, "before": false },
+  "globals": {
+    "process": false,
+    "require": false,
+    "define": false,
+    "console": false,
+    "it": false,
+    "describe": false,
+    "before": false,
+    "after" : false,
+    "beforeEach" : false
+  },
   "globalstrict": true,
   "indent": 2,
   "laxcomma": true,

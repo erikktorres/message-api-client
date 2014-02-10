@@ -19,102 +19,54 @@ var mockedRequest = require('../mock/mockRequest');
 
 describe('messages client', function() {
 
-  var client;
+  var port = 21001;
+  var hostGetter = {
+    get: function() { return [{ protocol: 'http', host: 'localhost:' + port }]; }
+  };
 
-  before(function(){
-    var groupsHostGetter = require('../mock/mockHakkenWatcher')('localhost','8080');
-    var messagesHostGetter = require('../mock/mockHakkenWatcher')('localhost','8082');
-    client = require('../../lib/client')(groupsHostGetter, messagesHostGetter, mockedRequest);
+  var client = require('../../lib/client')(hostGetter, null, mockedRequest);
+
+  var server = require('restify').createServer({ name: 'test' });
+  var handler = null;
+
+  before(function(done){
+    var theFn = function (req, res, next) {
+      handler(req, res, next);
+    };
+    server.get(/.*/, theFn);
+    server.post(/.*/, theFn);
+    server.put(/.*/, theFn);
+    server.del(/.*/, theFn);
+    server.on('uncaughtException', function(req, res, route, err){
+      throw err;
+    });
+    server.listen(port, function(err){
+      done();
+    });
   });
 
-  describe('getUsersMessages', function() {
+  after(function(){
+    server.close();
+  });
 
-    it('returns groups and associated messages for user', function(done) {
-
-      client.getUsersMessages('1234','fakeit',function(err,userMessages){
-        if(err) done(err);
-
-        expect(userMessages).to.exist;
-        expect(userMessages.groups).to.exist;
-
-        var oneGroup = userMessages.groups[0];
-        expect(oneGroup.messages).to.exist;
-
-        done();
-      });
-
-    });
-
-    it('returns two groups', function(done) {
-
-      client.getUsersMessages('1234','fakeit',function(err,userMessages){
-        if(err) done(err);
-
-        expect(userMessages.groups).to.exist;
-        expect(userMessages.groups.length).to.equal(2);
-
-        done();
-      });
-
-    });
-
-    it('returns three messages for the first group', function(done) {
-
-      client.getUsersMessages('1234','fakeit',function(err,userMessages){
-        if(err) done(err);
-
-        var oneGroup = userMessages.groups[0];
-        expect(oneGroup.messages.length).to.equal(3);
-        done();
-      });
-
-    });
-
-    it('returns one message for the second group', function(done) {
-
-      client.getUsersMessages('1234','fakeit',function(err,userMessages){
-        if(err) done(err);
-
-        var oneGroup = userMessages.groups[1];
-        expect(oneGroup.messages.length).to.equal(1);
-        done();
-      });
-
-    });
+  beforeEach(function(){
+    handler = null;
   });
 
   describe('getThreadMessages', function() {
 
-    it('returns 3 messages from a thread', function(done) {
+    it('returns messages for the thread', function(done) {
 
-      client.getThreadMessages('7234','fakeit',function(err,messages){
-        if(err) done(err);
-
-        expect(messages).to.exist;
-        expect(messages.length).to.equal(3);
-
-        done();
-      });
-
-    });
-
-  });
-
-  describe('addToThread', function() {
-
-    it('returns id once reply made', function(done) {
-
-      var messageForThread = {
-        parentmessage:'7234',
-        userid: 'f87aeade-e663-4e23-9f86-f2cbd7400d27',
-        groupid: '1234',
-        timestamp: '2013-11-30T23:05:40+00:00',
-        messagetext: 'Forth message.'
+      handler = function(req, res, next) {
+        expect(req.path()).equals('/thread/userId');
+        expect(req.method).equals('GET');
+        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+        next();
       };
-
-      client.addToThread(messageForThread,'7234','fakeit',function(err,id){
-        if(err) done(err);
-        expect(id).to.exist;
+      client.getThreadMessages('userId', '1234', function(err, res){
+        expect(err).to.not.exist;
+        expect(res).to.exist;
+        expect(res).to.be.a('array');
         done();
       });
 
@@ -124,20 +76,47 @@ describe('messages client', function() {
 
   describe('startNewThread', function() {
 
-    it('returns id once thread started', function(done) {
+    it('returns the id for added message', function(done) {
 
-      var theGroup = '1234';
-
-      var startOfMessageThread = {
-        parentmessage:'',
-        userid: 'f87aeade-e663-4e23-9f86-f2cbd7400d27',
-        groupid: theGroup,
-        timestamp: '2013-11-30T23:05:40+00:00',
-        messagetext: 'Lets kick this off'
+      var theMessage = {
+        messagetext:'some new message'
       };
 
-      client.startNewThread(startOfMessageThread,theGroup,'fakeit',function(err,id){
-        if(err) done(err);
+      handler = function(req, res, next) {
+        expect(req.path()).equals('/send/groupid');
+        expect(req.method).equals('POST');
+        expect(req.method).equals({message:theMessage});
+        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+        next();
+      };
+      client.startNewThread('groupid', theMessage, '1234', function(err, res){
+        expect(err).to.not.exist;
+        expect(res).to.exist;
+        done();
+      });
+
+    });
+
+  });
+
+  describe('addToThread', function() {
+
+    it('returns the id for added message', function(done) {
+
+      var theComment = {
+        messagetext:'some text'
+      };
+
+      handler = function(req, res, next) {
+        expect(req.path()).equals('/reply/userId');
+        expect(req.method).equals('POST');
+        expect(req.method).equals({message:theComment});
+        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+        next();
+      };
+      client.addToThread('userId', theComment, '1234', function(err, id){
+        expect(err).to.not.exist;
+        console.log('id? ',id);
         expect(id).to.exist;
         done();
       });
@@ -146,25 +125,23 @@ describe('messages client', function() {
 
   });
 
-});
+  describe('getUsersMessages', function() {
 
-describe(' cannot talk to hosts', function() {
+    it('returns the id for added message', function(done) {
 
-  var client;
+      handler = function(req, res, next) {
+        expect(req.path()).equals('/all/userId');
+        expect(req.method).equals('GET');
+        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+        next();
+      };
 
-  before(function(){
-
-    var emptyGetter = require('../mock/mockEmptyHakkenWatcher')();
-    client = require('../../lib/client')(emptyGetter, emptyGetter, mockedRequest);
-  });
-
-  it('returns an error code and message as the host cannot be found', function(done) {
-
-    client.getUsersMessages('1234','fakeit',function(err,userMessages){
-
-      expect(err.statusCode).to.equal(503);
-      expect(err.message).to.exist;
-      done();
+      client.getUsersMessages('userId', '1234', function(err, messages){
+        expect(err).to.not.exist;
+        expect(messages).to.exist;
+        expect(messages).to.be.a('array');
+        done();
+      });
 
     });
 
