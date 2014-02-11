@@ -14,8 +14,7 @@
 // == BSD2 LICENSE ==
 
 'use strict';
-var expect = require('chai').expect;
-var mockedRequest = require('../mock/mockRequest');
+var expect = require('salinity').expect;
 
 describe('messages client', function() {
 
@@ -24,7 +23,7 @@ describe('messages client', function() {
     get: function() { return [{ protocol: 'http', host: 'localhost:' + port }]; }
   };
 
-  var client = require('../../lib/client')(hostGetter, null, mockedRequest);
+  var client = require('../../lib/client')(hostGetter);
 
   var server = require('restify').createServer({ name: 'test' });
   var handler = null;
@@ -53,96 +52,101 @@ describe('messages client', function() {
     handler = null;
   });
 
-  describe('getThreadMessages', function() {
+  it('returns messages for the thread', function(done) {
 
-    it('returns messages for the thread', function(done) {
 
-      handler = function(req, res, next) {
-        expect(req.path()).equals('/thread/userId');
-        expect(req.method).equals('GET');
-        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
-        next();
-      };
-      client.getThreadMessages('userId', '1234', function(err, res){
-        expect(err).to.not.exist;
-        expect(res).to.exist;
-        expect(res).to.be.a('array');
-        done();
-      });
+    var returnVal = [{
+      id:'7234',
+      parentmessage : '',
+      userid: 'a3d6a658-6e6a-401b-bcb3-c99268ba1804',
+      groupid: '1234',
+      timestamp: '2013-11-28T23:07:40+00:00',
+      messagetext: 'In three words I can sum up everything I have learned about life: it goes on.'
+    }];
 
+    handler = function(req, res, next) {
+      expect(req.path()).equals('/thread/userId');
+      expect(req.method).equals('GET');
+      expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+      res.send(200,returnVal);
+      next();
+    };
+
+    client.getThreadMessages('userId', '1234', function(err, res){
+      expect(err).to.not.exist;
+      expect(res).to.exist;
+      done();
     });
 
   });
 
-  describe('startNewThread', function() {
+  it('returns the id for added message', function(done) {
 
-    it('returns the id for added message', function(done) {
+    var theMessage = {
+      messagetext: 'some new message',
+      userid : '12345'
+    };
 
-      var theMessage = {
-        messagetext:'some new message'
-      };
+    handler = function(req, res, next) {
+      
+      expect(req.path()).equals('/send/groupid');
+      expect(req.method).equals('POST');
+      expect(req.headers).to.have.property('content-type').that.equals('application/x-www-form-urlencoded; charset=utf-8');
+      expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+      res.send(201,'33333');
+      next();
+    };
 
-      handler = function(req, res, next) {
-        expect(req.path()).equals('/send/groupid');
-        expect(req.method).equals('POST');
-        expect(req.method).equals({message:theMessage});
-        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
-        next();
-      };
-      client.startNewThread('groupid', theMessage, '1234', function(err, res){
-        expect(err).to.not.exist;
-        expect(res).to.exist;
-        done();
-      });
-
+    client.startNewThread(theMessage,'groupid', '1234', function(err, res){
+      expect(err).to.not.exist;
+      expect(res).to.exist;
+      done();
     });
 
   });
 
-  describe('addToThread', function() {
+  it('returns the id for added message', function(done) {
 
-    it('returns the id for added message', function(done) {
+    var theComment = {
+      messagetext:'some text'
+    };
 
-      var theComment = {
-        messagetext:'some text'
-      };
+    handler = function(req, res, next) {
 
-      handler = function(req, res, next) {
-        expect(req.path()).equals('/reply/userId');
-        expect(req.method).equals('POST');
-        expect(req.method).equals({message:theComment});
-        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
-        next();
-      };
-      client.addToThread('userId', theComment, '1234', function(err, id){
-        expect(err).to.not.exist;
-        console.log('id? ',id);
-        expect(id).to.exist;
-        done();
-      });
-
+      expect(req.path()).equals('/reply/userId');
+      expect(req.method).equals('POST');
+      expect(req.headers).to.have.property('content-type').that.equals('application/x-www-form-urlencoded; charset=utf-8');
+      expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+      res.send(201,'44444');
+      next();
+    };
+    client.addToThread(theComment, 'userId', '1234', function(err, id){
+      expect(err).to.not.exist;
+      expect(id).to.exist;
+      done();
     });
 
   });
 
-  describe('getUsersMessages', function() {
+  it('returns the id for added message', function(done) {
 
-    it('returns the id for added message', function(done) {
+    var startTime = Date();
+    var messages = [{messagetext:'some text'},{messagetext:'some more text'}];
 
-      handler = function(req, res, next) {
-        expect(req.path()).equals('/all/userId');
-        expect(req.method).equals('GET');
-        expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
-        next();
-      };
+    handler = function(req, res, next) {
 
-      client.getUsersMessages('userId', '1234', function(err, messages){
-        expect(err).to.not.exist;
-        expect(messages).to.exist;
-        expect(messages).to.be.a('array');
-        done();
-      });
+      expect(req.path()).equals('/all/userId');
+      expect(req._url.query).equals('starttime='+encodeURIComponent(startTime)+'&endtime=');
+      expect(req.method).equals('GET');
+      expect(req.headers).to.have.property('x-tidepool-session-token').that.equals('1234');
+      res.send(200,messages);
+      next();
+    };
 
+    client.getUsersMessages('userId', startTime, null,'1234', function(err, messages){
+      expect(err).to.not.exist;
+      expect(messages).to.exist;
+      done();
     });
 
   });

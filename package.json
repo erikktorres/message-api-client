@@ -21,7 +21,8 @@
     "grunt-shell-spawn": "0.3.0",
     "grunt-mocha-test": "0.8.2",
     "chai": "1.8.1",
-    "restify": "~2.6.1"
+    "restify": "2.6.1",
+    "salinity": "0.0.1"
   },
   "dependencies": {
     "url": "0.7.9",
