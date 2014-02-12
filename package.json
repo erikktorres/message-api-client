@@ -2,7 +2,6 @@
   "name": "message-api-client",
   "version": "0.0.1",
   "description": "Client library to make it easier to use the message-api",
-  "main": "index.js",
   "homepage": "https://github.com/tidepool-org/message-api-client",
   "bugs": "https://github.com/tidepool-org/message-api-client/issues",
   "repository": "https://github.com/tidepool-org/message-api-client.git",
@@ -10,6 +9,11 @@
   "scripts": {
     "test": "grunt test"
   },
+  "files": [
+    "lib",
+    "index.js"
+  ],
+  "main": "index.js",
   "author": "Tidepool",
   "devDependencies": {
     "expect": "0.0.2",
